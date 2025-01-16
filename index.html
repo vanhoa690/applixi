@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web App Lắc Xì</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #fbe7c6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .container {
+        text-align: center;
+      }
+
+      .envelope {
+        position: relative;
+        width: 200px;
+        height: 300px;
+        background-color: #d32f2f;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+      }
+
+      .flap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 50%;
+        background-color: #b71c1c;
+        border-bottom: 5px solid #d32f2f;
+        transform-origin: top;
+        transform: rotateX(0deg);
+        transition: transform 0.5s;
+      }
+
+      .message {
+        display: none;
+        font-size: 18px;
+        font-weight: bold;
+        color: #fff;
+        margin-top: 20px;
+      }
+
+      .envelope.open .flap {
+        transform: rotateX(-180deg);
+      }
+
+      .envelope.open .message {
+        display: block;
+      }
+
+      .money {
+        position: absolute;
+        top: 60%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 24px;
+        font-weight: bold;
+        color: #fff;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/shake.js/shake.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="envelope">
+        <div class="flap"></div>
+        <div class="money">💵 Lắc để nhận!</div>
+      </div>
+      <div class="message">Bạn nhận được 100k! 🎉</div>
+    </div>
+
+    <script>
+      const myShakeEvent = new Shake({ threshold: 15, timeout: 1000 });
+      myShakeEvent.start();
+
+      window.addEventListener(
+        "shake",
+        () => {
+          const envelope = document.querySelector(".envelope");
+          if (!envelope.classList.contains("open")) {
+            envelope.classList.add("open");
+            document.querySelector(".money").textContent = `💵 ${Math.floor(
+              Math.random() * 1000 + 100
+            )}k`;
+            setTimeout(() => {
+              document.querySelector(".message").style.display = "block";
+            }, 500);
+          }
+        },
+        false
+      );
+    </script>
+  </body>
+</html>
