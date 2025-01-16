@@ -70,38 +70,114 @@
         font-weight: bold;
         color: #fff;
       }
+
+      .results {
+        margin-top: 30px;
+        font-size: 16px;
+        color: #333;
+        max-width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: left;
+      }
+
+      .results img {
+        width: 24px;
+        height: 24px;
+        vertical-align: middle;
+        margin-right: 8px;
+      }
+
+      .limit-message {
+        font-size: 16px;
+        color: red;
+        margin-top: 20px;
+        display: none;
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/shake.js/shake.min.js"></script>
   </head>
   <body>
     <div class="container">
-      <div class="envelope">
+      <div class="envelope" onclick="handleClick()">
         <div class="flap"></div>
         <div class="money">💵 Lắc để nhận!</div>
       </div>
       <div class="message">Bạn nhận được 100k! 🎉</div>
+      <div class="results" id="results">
+        <p><strong>Lịch sử nhận lì xì:</strong></p>
+      </div>
+      <div class="limit-message" id="limit-message">
+        Bạn đã sử dụng hết lượt lắc!
+      </div>
     </div>
+
+    <audio id="background-music" loop autoplay>
+      <source src="https://example.com/newyear.mp3" type="audio/mpeg" />
+      Trình duyệt của bạn không hỗ trợ phát nhạc.
+    </audio>
 
     <script>
       const myShakeEvent = new Shake({ threshold: 15, timeout: 1000 });
       myShakeEvent.start();
 
-      window.addEventListener(
-        "shake",
-        () => {
-          const envelope = document.querySelector(".envelope");
-          if (!envelope.classList.contains("open")) {
-            envelope.classList.add("open");
-            document.querySelector(".money").textContent = `💵 ${Math.floor(
-              Math.random() * 1000 + 100
-            )}k`;
-            setTimeout(() => {
-              document.querySelector(".message").style.display = "block";
-            }, 500);
+      const results = document.getElementById("results");
+      const limitMessage = document.getElementById("limit-message");
+      let playCount = 0;
+      const maxPlays = 3;
+
+      // Define prize probabilities
+      const prizePool = [10, 20, 50, 100, 200, 500, 1000];
+      const probabilities = [0.5, 0.3, 0.1, 0.05, 0.04, 0.01];
+
+      function getRandomPrize() {
+        const random = Math.random();
+        let cumulativeProbability = 0;
+        for (let i = 0; i < prizePool.length; i++) {
+          cumulativeProbability += probabilities[i];
+          if (random <= cumulativeProbability) {
+            return prizePool[i];
           }
-        },
-        false
-      );
+        }
+        return prizePool[0]; // Fallback
+      }
+
+      function addResult(amount) {
+        const newResult = document.createElement("p");
+        newResult.innerHTML = `<img src='https://via.placeholder.com/24' alt='gift icon'> Bạn nhận được ${amount}k!`;
+        results.appendChild(newResult);
+      }
+
+      function handleClick() {
+        if (playCount >= maxPlays) {
+          limitMessage.style.display = "block";
+          return;
+        }
+
+        const envelope = document.querySelector(".envelope");
+        if (!envelope.classList.contains("open")) {
+          envelope.classList.add("open");
+          const amount = getRandomPrize();
+          document.querySelector(".money").textContent = `💵 ${amount}k`;
+          document.querySelector(
+            ".message"
+          ).textContent = `Bạn nhận được ${amount}k! 🎉`;
+          addResult(amount);
+          playCount++;
+
+          setTimeout(() => {
+            envelope.classList.remove("open");
+            document.querySelector(".money").textContent = "💵 Lắc để nhận!";
+            document.querySelector(".message").textContent = "";
+          }, 1500);
+        }
+      }
+
+      window.addEventListener("shake", handleClick, false);
+
+      // Play background music
+      const music = document.getElementById("background-music");
+      music.volume = 0.5; // Set volume to 50%
     </script>
   </body>
 </html>
